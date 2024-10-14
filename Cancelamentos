@@ -1,0 +1,17 @@
+ Realizar a extração de cancelados
+ 
+ 1° Acessar o a base do Dev pelo terminal
+ssh -i devaws.pem ec2-user@devapp.cloudgym.com;
+ 
+ 2° Remover os bancos extraídos anteriormente:
+cd /usr/share/nginx/html/output/
+
+3° Acessar o diretório de script para extraír:
+cd /opt/infra-scripts/db/
+./extract-db.sh (Unidade)
+
+ 4° Acessar o link para baixar o arquivo e encaminhar ao cliente que cancelou:
+https://devapp.cloudgym.com/output/
+
+5° Os bancos de dados extraídos estão no link abaixo:
+https://devapp.cloudgym.com/output/
