@@ -1,1 +1,70 @@
+Passo a passo para encaminhar uma migração ao ambiente de Dev, dentro do Ubuntu: 
+
+1- Acesse o local do seu ambiente linux: 
+cd migracao/
+
+
+2- Copiar a planilha formatada do windows para o linux: 
+cp /mnt/c/migracao/0123_0123_Alunos_Exemplo_Academia.xlsx /home/(seu diretótio)/migracao/
+
+* Substitua os número deste exemplo pelo grupo e unidade, respectivamente.
+! Dica: Utilize sempre o "TAB" para completar corretamente e evitar erros de diretório.
+
+
+3- Após copiar para o ambiente linux, encaminhe sua planilha para o servidor: 
+scp -i devaws.pem 0123_0123_Alunos_Exemplo_Academia.xlsx ec2-user@devapp.cloudgym.com:/opt/infra-scripts/migration/pending
+
+
+4- Acesse o servidor: 
+ssh -i devaws.pem ec2-user@devapp.cloudgym.com;
+
+
+5- Acesse apenas o local de migrações do servidor: 
+cd /opt/infra-scripts/migration/
+
+
+6- Digite "ls -l" para se certificar de que está do diretório correto: 
+(Segue abaixo um exemplo do que deve aparecer)
+
+drwxrwxr-x 2 ec2-user ec2-user   109 Jan 11  2023 bin
+drwxrwxr-x 2 ec2-user ec2-user 20480 Oct  4 22:00 bkp
+-rwxrw-r-- 1 ec2-user ec2-user  2736 Sep 25 17:10 build_alunos_mig_card.sh
+drwxrwxr-x 2 ec2-user ec2-user   134 Sep 25 17:10 carddata
+drwxrwxr-x 2 ec2-user ec2-user     6 Oct  4 15:34 error
+-rwxrw-r-- 1 ec2-user ec2-user  2186 Sep 25 14:44 load_chd-db.sh
+-rwxrwxr-x 1 ec2-user ec2-user  5892 Sep 25 16:40 load_migration-db.sh
+drwxrwxr-x 2 ec2-user ec2-user     6 Oct  4 15:35 pending
+-rw-rw-r-- 1 ec2-user ec2-user  1915 Sep 28  2023 pom.xml
+drwxrwxr-x 2 ec2-user ec2-user     6 Oct  4 22:00 processed
+drwxr-xr-x 3 ec2-user ec2-user    18 Sep  1  2022 src
+drwxrwxr-x 7 ec2-user ec2-user   147 Sep  2  2022 target
+drwxrwxr-x 2 ec2-user ec2-user     6 Sep  2  2022 tmp
+[ec2-user@dev migration]$
+
+
+7- Inicie o processo de migração: 
+./load_migration-db.sh
+
+* Existem dois comandos de Load, tenha certeza que utilizou esse. 
+
+! Dica: Irá carregar todas as linhas da planilha, para que encontre corretamente o nome da sheet da planilha precisa ser "ALUNOS"
+! Dica: Certifique-se que existe o grupo e a unidade que está migrando no Dev, caso contrário resultará em Error
+! Dica: Ao finalizar a migração aparecerá essa mensagem: 
+
+Migration processes for "/opt/infra-scripts/migration/pending/3096_349_Alunos_Academia_Mais_Mulher.xlsx" done!...
+Execution time: 207.599 seconds
+0123_0123_Alunos_Exemplo_Academia.xlsx was loaded with successfuly...
+nothing to move...
+[ec2-user@dev migration]$
+
+
+8- Para confirmar se sua migração foi corretamente para o Dev, acesse o diretório de processamento: 
+cd processed/
+
+
+9- Caso dê algum erro, acesse o diretório de erros "cd error/", remova com o comando "rm", corrija e refaça o processo.
+
+
+10- Ao finalizar, digite "exit" para sair do servidor e depois pode fechar o Ubuntu.
+
 
