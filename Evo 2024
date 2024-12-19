@@ -1,1 +1,91 @@
-
+SELECT DISTINCT c.id_cliente AS id_aluno, ucase(c.endereco) & ' ' & c.numero & ' - ' & c.complemento AS descr_endereco, format(c.dt_nascimento, "yyyy-mm-dd") AS dt_nasc, "'+55" + replace(replace(replace(nz(cel.fone,0),'(',''),')',''),'-','') AS num_celular, "'+55" + replace(replace(replace(nz(tel.fone,0),'(',''),')',''),'-','') AS num_telefone, ucase(c.cidade) AS descr_cidade, c.cpf AS num_cpf, lcase(e.email) AS descr_email, c.sexo AS tipo_genero, ucase(c.nome & ' ' & c.snome) AS descr_nome, ucase(c.bairro) AS descr_bairro, ucase(c.rg) AS num_rg, u.sigla AS sigla_uf, c.cep AS num_cep, format(iif(isnull(c.dt_cadastro), date(), c.dt_cadastro), "yyyy-mm-dd") AS dt_cadastro, null AS descr_annotation, iif(isnull(c.lat), 0, c.lat) AS num_latitude, iif(isnull(c.lon), 0, c.lon) AS num_longitude, ct.id_cliente_contrato AS id_contrato, format(iif(isnull(ct.inicio), date(), ct.inicio), "yyyy-mm-dd") AS dt_contrato_ini, format(iif(isnull(ct.fim), date(), ct.fim), "yyyy-mm-dd") AS dt_contrato_fim, ucase(ct.ds_contrato) AS descr_plano, p.valor AS vlr_recebido, Switch( 
+    r.id_tipo_recebimento in (1,6,7) ,"DN",
+					r.id_tipo_recebimento = 2, "ECC",
+					r.id_tipo_recebimento = 3, "ECD",
+					r.id_tipo_recebimento = 4, "CH",
+					r.id_tipo_recebimento in (5,13, 14,15,18), "BL",
+					r.id_tipo_recebimento in (8,9,16), "BT",
+					r.id_tipo_recebimento = 11, "DN",				
+					r.id_tipo_recebimento = 12, "CC",
+		) AS descr_methodpayment, format(iif(isnull(p.dt_vencimento), date(), p.dt_vencimento), "yyyy-mm-dd") AS dt_vencimento, format(iif(isnull(p.dt_recebimento), date(), p.dt_recebimento), "yyyy-mm-dd") AS dt_recebimento, p.status AS st_recebimento
+FROM (((((cliente AS c LEFT JOIN (SELECT t0.id_cliente, t0.descricao as fone
+        FROM telefone t0
+        INNER JOIN (
+            SELECT id_cliente, max(id_telefone) as id_telefone0
+            FROM telefone
+            WHERE tipo_contato = 1
+            GROUP BY id_cliente
+        ) t1 ON (t1.id_cliente = t0.id_cliente AND t1.id_telefone0 = t0.id_telefone)
+        WHERE tipo_contato = 1
+    )  AS tel ON tel.id_cliente = c.id_cliente and c.FL_DADOS_PESSOAIS_EXCLUIDOS <> "True" and FL_EXCLUIDO <> "True") LEFT JOIN (SELECT t0.id_cliente, t0.descricao as fone
+        FROM telefone t0
+        INNER JOIN (
+            SELECT id_cliente, max(id_telefone) as id_telefone0
+            FROM telefone
+            WHERE tipo_contato = 2
+            GROUP BY id_cliente
+        ) t1 ON (t1.id_cliente = t0.id_cliente AND t1.id_telefone0 = t0.id_telefone)
+        WHERE tipo_contato = 2
+    )  AS cel ON cel.id_cliente = c.id_cliente) LEFT JOIN (SELECT t0.id_cliente, t0.descricao as email
+        FROM telefone t0
+        INNER JOIN (
+            SELECT id_cliente, max(id_telefone) as id_telefone0
+            FROM telefone
+            WHERE tipo_contato = 4
+            GROUP BY id_cliente
+        ) t1 ON (t1.id_cliente = t0.id_cliente AND t1.id_telefone0 = t0.id_telefone)
+        WHERE tipo_contato = 4
+    )  AS e ON e.id_cliente = c.id_cliente) LEFT JOIN (SELECT DISTINCT id_estado, sigla
+        FROM estado
+    )  AS u ON u.id_estado = c.id_estado) LEFT JOIN (SELECT DISTINCT
+            c0.id_cliente_contrato,
+            c0.id_cliente,
+            c0.id_contrato,
+            c1.min_dt_contrato as inicio,
+            c1.max_dt_contrato as fim,
+            c0.ds_contrato,
+            iif(c0.fl_debito_recorrente = "True", "CC", "DN") as tipo_pagamento,
+            c0.fl_cancelado
+        FROM cliente_contrato c0
+        INNER JOIN (
+            SELECT id_cliente, id_contrato, min(inicio) as min_dt_contrato, max(fim) as max_dt_contrato
+            FROM cliente_contrato
+            WHERE fl_cancelado <> "True"
+            AND id_contrato IS NOT NULL
+            GROUP BY id_cliente, id_contrato
+        ) c1 ON (c1.id_cliente = c0.id_cliente AND c1.id_contrato = c0.id_contrato AND c1.max_dt_contrato = c0.fim)
+        WHERE c0.fl_cancelado <> "True"
+        AND c0.id_contrato IS NOT NULL
+    )  AS ct ON ct.id_cliente = c.id_cliente) LEFT JOIN (SELECT 
+            v.id_cliente,
+            vi.id_contrato,
+            r.id_venda,
+            r.id_recebimento,
+            r.id_tipo_recebimento,
+            rt.descricao as ds_tipo_recebimento,
+            format(r.dt_lancamento, "dd/mm/yyyy") as dt_lancamento,
+            format(r.dt_vencimento, "dd/mm/yyyy") as dt_vencimento,
+            format(r.dt_recebimento, "dd/mm/yyyy") as dt_recebimento,
+            r.ds_recebimento,
+            r.ds_nome_comprador,
+            r.valor,
+            iif(isnull(r.dt_recebimento), null, 'paid') as status
+        FROM (((recebimento r
+            INNER JOIN recebimento_tipo rt ON rt.id_tipo_recebimento = r.id_tipo_recebimento)
+            INNER JOIN venda_item vi ON vi.id_venda = r.id_venda)
+            INNER JOIN venda v ON v.id_venda = vi.id_venda)
+        WHERE 1 = 1
+        AND r.fl_cancelado <> "True"
+        AND vi.id_contrato IS NOT NULL
+        AND r.id_tipo_recebimento IS NOT NULL
+        AND r.id_tipo_recebimento <> 11
+        AND r.valor > 0
+        AND v.id_cliente IS NOT NULL
+		AND r.dt_recebimento < date()
+			and (r.id_tipo_recebimento = 12 and r.dt_recebimento <> null)
+			and (r.id_tipo_recebimento = 12 and r.dt_recebimento >= r.dt_vencimento)
+				or (r.id_tipo_recebimento <> 12)
+				
+    )  AS p ON p.id_cliente = ct.id_cliente AND p.id_contrato = ct.id_contrato
+WHERE ct.id_contrato IS NOT NULL
+ORDER BY c.id_cliente;
