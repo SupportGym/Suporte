@@ -1,1 +1,179 @@
+1. Importar as tabelas abaixo:
+- A primeira linha contém títulos de coluna.
+- Permitindo que seja adicionado uma PRIMARY KEY na tabela.
+---------------------------------------------------------------------------------------
+	- cidade
+	- contrato
+	- contratomodalidade
+	- email
+	- endereco
+	- estado
+	- modalidade
+	- pessoa
+	- telefone
 
+Caso seja uma migração com cartão, você precisa adicionar mais três tabelas
+  - movpagamento
+  - movparcela
+  - movprodutoparcela
+
+2. Cleanup de registros duplicados
+----------------------------------
+Algumas vezes as tabelas acima vem com registros duplicados para isso devemos rodar as queries abaixo.
+Ao rodar o primeiro SELECT é possível identificar que para cada chave da tabela existe mais de um valor, o que significa que existe duplicidade de registros na base.
+Após rodar o DELETE e depois o primeiro SELECT novamente é possível verificar que a duplicidade foi removida
+
+//Alterar modo exibição de descrição/identificação para id//
+
+
+RODAR PRIMEIRO O SELECT, SE NÃO HOUVER REGISTRO, NÃO PRECISA RODAS OS DEMAIS.
+
+	select codigo, count(0) as qtd from cidade group by codigo having count(0) > 1
+	delete from cidade where id in (select id from cidade a inner join (select codigo, max(id) as id0 from cidade group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from cidade where id in (select id from cidade a inner join (select codigo, max(id) as id0 from cidade group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+
+	select codigo, count(0) as qtd from contrato group by codigo having count(0) > 1
+	delete from contrato where id in (select id from contrato a inner join (select codigo, max(id) as id0 from contrato group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from contrato where id in (select id from contrato a inner join (select codigo, max(id) as id0 from contrato group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+
+	select codigo, count(0) as qtd from contratomodalidade group by codigo having count(0) > 1
+	delete from contratomodalidade where id in (select id from contratomodalidade a inner join (select codigo, max(id) as id0 from contratomodalidade group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from contratomodalidade where id in (select id from contratomodalidade a inner join (select codigo, max(id) as id0 from contratomodalidade group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+
+	select codigo, count(0) as qtd from email group by codigo having count(0) > 1
+	delete from email where id in (select id from email a inner join (select codigo, max(id) as id0 from email group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from email where id in (select id from email a inner join (select codigo, max(id) as id0 from email group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+
+	select codigo, count(0) as qtd from endereco group by codigo having count(0) > 1
+	delete from endereco where id in (select id from endereco a inner join (select codigo, max(id) as id0 from endereco group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from endereco where id in (select id from endereco a inner join (select codigo, max(id) as id0 from endereco group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+
+	select codigo, count(0) as qtd from estado group by codigo having count(0) > 1
+	delete from estado where id in (select id from estado a inner join (select codigo, max(id) as id0 from estado group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from estado where id in (select id from estado a inner join (select codigo, max(id) as id0 from estado group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+
+	select codigo, count(0) as qtd from modalidade group by codigo having count(0) > 1
+	delete from modalidade where id in (select id from modalidade a inner join (select codigo, max(id) as id0 from modalidade group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from modalidade where id in (select id from modalidade a inner join (select codigo, max(id) as id0 from modalidade group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+
+	select codigo, count(0) as qtd from pessoa group by codigo having count(0) > 1
+	delete from pessoa where id in (select id from pessoa a inner join (select codigo, max(id) as id0 from pessoa group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from pessoa where id in (select id from pessoa a inner join (select codigo, max(id) as id0 from pessoa group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+
+	select codigo, count(0) as qtd from telefone group by codigo having count(0) > 1
+	delete from telefone where id in (select id from telefone a inner join (select codigo, max(id) as id0 from telefone group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	select * from telefone where id in (select id from telefone a inner join (select codigo, max(id) as id0 from telefone group by codigo) b on (a.codigo = b.codigo and a.id = b.id0))
+	
+
+3. Execução da Query para obtenção dos registros para a planilha normalizada
+----------------------------------------------------------------------------
+??Se ocorrer erro de expresão não equivalente??
+
+Altere na tabela de pessoa os campos cidade e estado de Texto para número 
+
+
+select
+      ct.empresa
+    , p.codigo                                                                  as id_aluno
+    , replace(trim(e.endereco & " " & e.complemento),"'","")                    as descr_endereco
+    , format(p.datanasc,"yyyy-mm-dd")                                           as dt_nasc
+    , "'+55" + replace(replace(replace(nz(t.tel_cel.numero,0),'(',''),')',''),'-','')    as num_celular
+    , "'+55" + replace(replace(replace(nz(t.tel_res.numero,0),'(',''),')',''),'-','')    as num_telefone
+    , c.nomesemacento                                                           as descr_cidade
+    , replace(replace(nz(p.cfp,0),".",""),"-","")                               as num_cpf
+    , m.email                                                                   as descr_email
+    , nz(p.sexo,"M")                                                            as tipo_genero
+    , p.nome                                                                    as descr_nome
+    , e.bairro                                                                  as descr_bairro
+    , p.rg                                                                      as num_rg
+    , u.sigla                                                                   as sigla_uf
+    , replace(replace(nz(e.cep,0),".",""),"-","")                               as num_cep
+    , format(p.datacadastro,"yyyy-mm-dd")                                       as dt_cadastro
+    , null                                                                      as descr_annotation
+    , 0                                                                         as num_latitude
+    , 0                                                                         as num_longitude
+    , ct.codigo                                                                 as id_contrato
+    , format(ct.vigenciade,"yyyy-mm-dd")                                        as dt_contrato_ini
+    , format(ct.vigenciaate,"yyyy-mm-dd")                                       as dt_contrato_fim
+    , ct.descricao                                                              as descr_plano
+from (((((((pessoa p
+        left join (
+            select a.*
+            from endereco a
+                inner join (
+                    select pessoa, max(codigo) as xcodigo
+                    from endereco group by pessoa
+                ) b on a.codigo = b.xcodigo and a.pessoa = b.pessoa
+        ) e on e.pessoa = p.codigo)
+        left join (
+            select a.*
+            from email a
+                inner join (
+                    select pessoa, max(codigo) as xcodigo
+                    from email group by pessoa
+                ) b on a.codigo = b.xcodigo and a.pessoa = b.pessoa
+        ) m on m.pessoa = p.codigo)
+        left join (
+            select c.codigo, c.pessoa, cm.modalidade0 as modalidade, c.vigenciade, c.vigenciaate, nome as descricao, valormensal, c.empresa
+            from
+            (
+                (
+                    (
+                        select c0.codigo, c0.pessoa, c0.vigenciade, c0.vigenciaate, c0.codigo, c0.plano, c0.empresa
+                        from contrato c0,
+                        (
+                            select pessoa, max(vigenciaateajustada) as dt_contrato from contrato group by pessoa
+                        ) c1
+                        where c0.pessoa = c1.pessoa
+                        and c0.vigenciaateajustada = c1.dt_contrato
+                    ) c left join
+                    (
+                        select contrato, max(modalidade) as modalidade0
+                        from contratomodalidade
+                        group by contrato
+                    ) cm on cm.contrato = c.codigo
+                )
+                left join modalidade m on cm.modalidade0 = m.codigo
+            )
+            where c.pessoa is not null
+        ) ct on ct.pessoa = p.codigo)
+        left join cidade c on c.codigo = p.cidade)
+        )
+        left join estado u on u.codigo = p.estado)
+        left join (
+            select *
+            from (
+                (
+                    select a.*
+                    from (
+                    select pessoa, tipotelefone, numero
+                    from telefone
+                    where tipotelefone = 'CE'
+                    ) a
+                    inner join (select pessoa, 'CE' as tipotelefone, max(numero) as xnumero from telefone where tipotelefone = 'CE' group by pessoa, 'CE') b
+                    on a.pessoa = b.pessoa
+                    and a.tipotelefone = b.tipotelefone
+                    and a.numero = b.xnumero
+                ) tel_cel
+                left join (
+                    select pessoa, 'CO' as tipotelefone, numero from telefone where tipotelefone = 'CO'
+                ) tel_com on tel_cel.pessoa = tel_com.pessoa)
+                left join (
+                    select a.*
+                    from (
+                    select pessoa, tipotelefone, numero
+                    from telefone
+                    where tipotelefone = 'RE'
+                    ) a
+                    inner join (select pessoa, 'RE' as tipotelefone, max(numero) as xnumero from telefone where tipotelefone = 'RE' group by pessoa, 'RE') b
+                    on a.pessoa = b.pessoa
+                    and a.tipotelefone = b.tipotelefone
+                    and a.numero = b.xnumero
+                ) tel_res on tel_cel.pessoa = tel_res.pessoa
+        ) t on t.tel_cel.pessoa = p.codigo)
+where p.codigo is not null
+and (ct.empresa = 1 or ct.empresa is null)
+order by p.codigo;
+
+
+select nome, count(0) from pessoa group by nome having count(0) > 1
