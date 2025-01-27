@@ -11,6 +11,8 @@
 	- modalidade
 	- pessoa
 	- telefone
+	- cliente
+
 
 Caso seja uma migração com cartão, você precisa adicionar mais três tabelas
   - movpagamento
@@ -177,3 +179,76 @@ order by p.codigo;
 
 
 select nome, count(0) from pessoa group by nome having count(0) > 1
+
+
+
+
+------------------------------- QUERY PROS DADOS COM CARTÃO ---------------------------------------------------
+
+SELECT ct.empresa, cl.situacao AS situacao, 
+cl.matricula AS id_aluno, 
+Ucase(replace(trim([e].endereco & " " & [e].complemento),"'","")) AS descr_endereco, 
+format(p.datanasc,"yyyy-mm-dd") AS dt_nasc, 
+"'+55"+replace(replace(replace(nz(t.tel_cel.numero,0),'(',''),')',''),'-','') AS num_celular, 
+"'+55"+replace(replace(replace(nz(t.tel_res.numero,0),'(',''),')',''),'-','') AS num_telefone,
+Ucase (c.nomesemacento) AS descr_cidade, replace(replace(nz(p.cfp,0),".",""),"-","") AS num_cpf, 
+Lcase (m.email) AS descr_email, nz(p.sexo,"M") AS tipo_genero, Ucase (p.nome) AS descr_nome, 
+Ucase([e].bairro) AS descr_bairro, p.rg AS num_rg, 
+u.sigla AS sigla_uf, 
+replace(replace(nz([e].cep,0),".",""),"-","") AS num_cep, 
+format(IIf(isnull(ct.vigenciade),date(),p.datacadastro),"yyyy-mm-dd") AS dt_cadastro, 
+null AS descr_annotation, 
+0 AS num_latitude, 
+0 AS num_longitude, 
+ct.codigo AS id_contrato, 
+format(IIf(isnull(ct.vigenciade),date(),ct.vigenciade),"yyyy-mm-dd") AS dt_contrato_ini, 
+format(IIf(isnull(ct.vigenciaate),date(),ct.vigenciaate),"yyyy-mm-dd") AS dt_contrato_fim, 
+Ucase (ct.descricao) AS descr_plano, Format(mp.datavencimento,"yyyy-mm-dd") AS dt_vencimento, 
+Format(IIf([mp.situacao]="PG",[mp.datavencimento],Null),"yyyy-mm-dd") AS dt_recebimento, 
+round([mp.valorparcela],2) AS vlr_recebido, 
+IIf([mp.situacao ]="PG","paid",Null) AS st_recebimento, 
+IIf([mpg.formapagamento]=1,"CC",IIf([mpg.formapagamento]=3,"CC",IIf([mpg.formapagamento]=4,"ECC",IIf([mpg.formapagamento]=5,"ECD",IIf([mpg.formapagamento]=12,"BL",IIf([mpg.formapagamento]=17,"BT","CC")))))) AS descr_methodpayment
+
+FROM (((((((((pessoa AS p
+LEFT JOIN (SELECT a.* FROM endereco AS a 
+INNER JOIN (SELECT pessoa, max(codigo) AS xcodigo 
+FROM endereco GROUP BY pessoa)  AS b 
+ON (a.pessoa = b.pessoa) AND (a.codigo = b.xcodigo))  AS e 
+ON [e].pessoa=p.codigo) 
+LEFT JOIN (SELECT a.* FROM email AS a 
+INNER JOIN (SELECT pessoa, max(codigo) AS xcodigo 
+FROM email GROUP BY pessoa)  AS b 
+ON (a.pessoa = b.pessoa) AND (a.codigo = b.xcodigo))  AS m 
+ON m.pessoa = p.codigo) LEFT JOIN (SELECT c.codigo, c.pessoa, cm.modalidade0 AS modalidade, 
+c.vigenciade, c.vigenciaate, nome AS descricao,
+valormensal, c.empresa FROM ((SELECT c0.codigo, c0.pessoa, c0.vigenciade, c0.vigenciaate, c0.codigo, c0.plano, c0.empresa FROM contrato AS c0,
+(SELECT pessoa, max(vigenciaateajustada) AS dt_contrato
+FROM contrato GROUP BY pessoa)  AS c1 WHERE c0.pessoa = c1.pessoa and c0.vigenciaateajustada = c1.dt_contrato)  AS c 
+LEFT JOIN (SELECT contrato, max(modalidade) AS modalidade0 
+FROM contratomodalidade GROUP BY contrato)  AS cm 
+ON cm.contrato = c.codigo) LEFT JOIN modalidade AS m 
+ON cm.modalidade0 = m.codigo WHERE c.pessoa is not null)  AS ct 
+ON ct.pessoa = p.codigo) LEFT JOIN cidade AS c 
+ON c.codigo = p.cidade) LEFT JOIN estado AS u 
+ON u.codigo = p.estado) LEFT JOIN (SELECT * FROM (SELECT a.* FROM (SELECT pessoa, tipotelefone, numero FROM telefone WHERE tipotelefone = 'CE')  AS a
+INNER JOIN (SELECT pessoa, 'CE' AS tipotelefone, max(numero) AS xnumero 
+FROM telefone WHERE tipotelefone = 'CE' GROUP BY pessoa, 'CE')  AS b 
+ON (a.numero = b.xnumero) AND (a.tipotelefone = b.tipotelefone) AND (a.pessoa = b.pessoa))  AS tel_cel 
+LEFT JOIN (SELECT a.* FROM (SELECT pessoa, tipotelefone, numero FROM telefone WHERE tipotelefone = 'RE')  AS a 
+INNER JOIN (SELECT pessoa, 'RE' AS tipotelefone, max(numero) AS xnumero 
+FROM telefone WHERE tipotelefone = 'RE' GROUP BY pessoa, 'RE')  AS b 
+ON (a.numero = b.xnumero) AND (a.tipotelefone = b.tipotelefone) AND (a.pessoa = b.pessoa))  AS tel_res 
+ON tel_cel.pessoa = tel_res.pessoa)  AS t 
+ON t.tel_cel.pessoa = p.codigo) LEFT JOIN cliente AS cl 
+ON p.codigo = cl.pessoa) LEFT JOIN movparcela AS mp 
+ON p.codigo = mp.pessoa) LEFT JOIN movprodutoparcela AS mpp 
+ON mpp.movparcela = mp.codigo) LEFT JOIN movpagamento AS mpg 
+ON mpg.recibopagamento = mpp.recibopagamento
+WHERE p.codigo Is Not Null And cl.situacao<>'VI' 
+And mp.situacao In ("PG","EA") 
+And ct.empresa In (1,2) 
+And ct.codigo Is Not Null 
+And mp.valorparcela>0 
+And mpp.valorpago>0 
+and mp.situacao = "PG"
+ORDER BY p.codigo;
