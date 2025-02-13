@@ -1,0 +1,47 @@
+Esse script será útil na extração e migração do banco de dados Sollution
+
+Você precisará ter o FIREBIRD 2.5 instalado na sua máquina
+
+Além disso, precisará extrair do PC do cliente o arquivo DATAFICT.GDB
+
+Após isso, você precisa importar esse banco de dados para o Dbeaver
+
+PROBLEMAS QUE PODEM SER ENFRENTADOS :
+1. Você precisará copiar o resultado de todos os valores e colar no excel. ATENÇÃO NA PARTE INFERIOR DO DBEAVER (Ele mostra o total e o quanto será copiado. Coloque sempre o total)
+2. Ao colar no excel, você precisará preencher manualmente os nomes das colunas, como "id_aluno, descr_endereco" e etc...
+3. Você possívelmente terá problemas de data nos campos dt_cadastro, dt_contrato_ini e dt_contrato_fim. Com isso, você irá precisar formatar essas três tabelas para o formato correto. 
+O acess pode te ajudar com isso.
+
+Esse script é executado sem o ACESS. Caso você queira rodar ele no Acess com um script padrão, você pode. Nesse caso, isso já irá corrigir as datas se você usar o format corretamente.
+
+Execute a seguinte Query (no Dbeaver)
+
+select
+ CODIGO															 	 as id_aluno
+, ENDERECO   										 				 as descr_endereco
+,     SUBSTRING(d_nasc FROM 7 FOR 4) || '-' ||  -- Ano (AAAA)
+    SUBSTRING(d_nasc FROM 4 FOR 2) || '-' ||  -- Mês (MM)
+    SUBSTRING(d_nasc FROM 1 FOR 2)           -- Dia (DD)
+    	as dt_nasc
+, '''+55' || CELULAR             	                                 as num_celular
+, upper(CIDADE)														 as descr_cidade
+, CPF 														 		as num_cpf
+, E_MAIL													    	 as descr_email						
+, case
+        when SEXO = 'Feminino' then 'F'
+        else 'M' 	end 											 as tipo_genero
+, NOME 														 		 as descr_nome
+, BAIRRO 														 	 as descr_bairro
+, '''+55' || TELEFONE												 as num_telefone
+, '' 													     		 as num_rg
+, 'GO'																 as sigla_uf
+, CEP 																 as num_cep
+, ''																 as descr_annotation
+, '0'															 	 as num_latitude
+, '0'																 as num_longitude
+, CURRENT_DATE														 AS dt_cadastro
+, ''																 as id_contrato
+,CURRENT_DATE									                     	 as dt_contrato_ini
+, CURRENT_DATE								                     as dt_contrato_fim
+, 'MIGRACAO'													     as descr_plano
+from TBALUNOS;
