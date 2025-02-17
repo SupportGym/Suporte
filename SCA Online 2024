@@ -1,1 +1,36 @@
+PROCESSO EXTRAÇÃO SCA ONLINE
 
+ACADEMIA DE EXEMPLO IVAN BRUNO (17/02/2025)
+
+Extrair do Sca Online no menu "Administrativo" > "Matrículas" e "Alunos", selecionando todos os "campos".
+
+- Salvar o CSV para Xlsx
+- Carregar Matriculas e Alunos para o Access
+- Alterar dentro do Access o título da tabela de "Nome-Completo" para "Nome"
+
+SELECT
+   a.Codigo                     																as  id_aluno           
+  , a.Nome                    															as  descr_nome         
+  , a.Email                   																	as  descr_email        
+  , "'+55" + replace(replace(replace(replace(nz(a.Telefone1,0),'(',''),')',''),'-',''),' ','')  as  num_telefone       
+  , a.Endereco & " N° " & a.numero & " Complemento " & a.complemento 							as  descr_endereco
+  , format(m.Nascimento,"yyyy-mm-dd")		                                                    as dt_nasc
+  , "'+55" + replace(replace(replace(replace(nz(a.Celular,0),'(',''),')',''),'-',''),' ','')    as  num_celular        
+  , a.CPF                       																as  num_cpf            
+  , replace(replace(a.Sexo,"Masculino","M"),"Feminino","F") 									as 	tipo_genero    
+  , a.Bairro               																  		as  descr_bairro       
+  , a.Cidade               																   		as  descr_cidade       
+  , a.RG                   																    	as  num_rg             
+  , a.Estado                   																   	as  sigla_uf           
+  , a.Cep                  																    	as  num_cep            
+  , format(iif(isnull(a.DatadeCadastro),date(), a.DatadeCadastro), "yyyy-mm-dd")                as  dt_cadastro        
+  , NULL              																			as  descr_annotation   
+  , 0                																			as  num_latitude       
+  , 0               																			as  num_longitude      
+  , NULL                															            as  id_contrato        
+  , format(iif(isnull(m.Inicio),date(), m.Inicio), "yyyy-mm-dd")              					as  dt_contrato_ini    
+  , format(iif(isnull(m.Fim),date(), m.Fim), "yyyy-mm-dd")               						as  dt_contrato_fim    
+  , m.Plano                  																	as  descr_plano          
+from Alunos a
+	left join Matriculas m on (a.Codigo = m.Codigo)
+order by a.Codigo;
