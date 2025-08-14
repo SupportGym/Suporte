@@ -1,3 +1,9 @@
+-Exportar planilhas contratos e clientes para o acess (devem estar como xlsx);
+-Separar texto por coluna (por virgurla) na primeira coluna;
+-Separar texto por coluna na parte de cidade (por "-") e renomear a segunda coluna gerada para "estado";
+-Selecionar as colunas que contem datas e horas e Converta Texto em Tabela separando por Espaço e depois formatar a celulas para data (dd/mm/yyyy);
+-Apagar as colunas criadas somente com as horas.
+
 select
 c.idpessoa																			as id_aluno,
 c.nome																				as descr_nome,
