@@ -1,9 +1,36 @@
--Exportar planilhas contratos e clientes para o acess (devem estar como xlsx);
+-Exportar planilhas contratos, clientes e receber(verifique se tem pagamentos relevantes na nextfitpay, se tiver use ela) para o acess (devem estar como xlsx);
 -Separar texto por coluna (por virgurla) na primeira coluna;
 -Separar texto por coluna na parte de cidade (por "-") e renomear a segunda coluna gerada para "estado";
 -Selecionar as colunas que contem datas e horas e Converta Texto em Tabela separando por Espaço e depois formatar a celulas para data (dd/mm/yyyy);
 -Apagar as colunas criadas somente com as horas.
 
-SELECT c.idpessoa AS id_aluno, Ucase(c.endereco & ", " & numendereco & ", " & compleendereco) AS descr_endereco, format(c.datanascimento,"yyyy-MM-dd") AS dt_nasc, "'+55" + "" & dddfone &	fone AS num_celular, Ucase(c.cidade) AS descr_cidade, c.cpf AS num_cpf, c.email AS descr_email, replace(replace(sexo,'1','M'),'2','F') AS tipo_genero, Ucase(c.nome) AS descr_nome, Ucase(c.bairro) AS descr_bairro, "'+55" + "" & dddfone & 	fone AS num_telefone, c.rg AS num_rg, "RR" AS sigla_uf, c.cep AS num_cep, "" AS descr_annotation, "0" AS num_latitude, "0" AS num_longitude, format(IIf(isnull(c.datacadastro),date(),c.datacadastro),"yyyy-mm-dd") AS dt_cadastro, co.idcontratocliente AS id_contrato, format(IIf(isnull(co.datainicio),date(),co.datainicio),"yyyy-mm-dd") AS dt_contrato_ini, format(IIf(isnull(co.datavalidade),date(),co.datavalidade),"yyyy-mm-dd") AS dt_contrato_fim, Ucase(co.descricao) AS descr_plano, format(IIf(isnull(r.metodopagamento),'DN',r.metodopagamento),"DN") AS descr_methodpayment, r.valor AS vlr_recebido, format(r.datavencimento,"yyyy-mm-dd") AS dt_vencimento, format(r.datarecebimento,"yyyy-mm-dd") AS dt_recebimento, co.status AS status, IIf(r.status='Recebido','paid','Aberto') AS st_recebimento
+(Explicação da tabela status)
+Você precisará alterar tudo que está como "Aberto" para vazio no Excel.
+
+SELECT c.idpessoa AS id_aluno, 
+Ucase(c.endereco & ", " & numendereco & ", " & compleendereco) AS descr_endereco, 
+format(c.datanascimento,"yyyy-MM-dd") AS dt_nasc, 
+"'+55" + "" & dddfone &	fone AS num_celular, 
+Ucase(c.cidade) AS descr_cidade, 
+c.cpf AS num_cpf, c.email AS descr_email,
+replace(replace(sexo,'1','M'),'2','F') AS tipo_genero, 
+Ucase(c.nome) AS descr_nome, Ucase(c.bairro) AS descr_bairro, 
+"'+55" + "" & dddfone & 	fone AS num_telefone, 
+c.rg AS num_rg, 
+null AS sigla_uf, 
+c.cep AS num_cep, 
+"" AS descr_annotation, 
+"0" AS num_latitude, 
+"0" AS num_longitude, 
+format(IIf(isnull(c.datacadastro),date(),c.datacadastro),"yyyy-mm-dd") AS dt_cadastro, 
+co.idcontratocliente AS id_contrato, 
+format(IIf(isnull(co.datainicio),date(),co.datainicio),"yyyy-mm-dd") AS dt_contrato_ini, 
+format(IIf(isnull(co.datavalidade),date(),co.datavalidade),"yyyy-mm-dd") AS dt_contrato_fim, 
+Ucase(co.descricao) AS descr_plano, 
+format(IIf(isnull(r.metodopagamento),'DN',r.metodopagamento),"DN") AS descr_methodpayment, 
+r.valor AS vlr_recebido, 
+format(r.datavencimento,"yyyy-mm-dd") AS dt_vencimento, 
+format(r.datarecebimento,"yyyy-mm-dd") AS dt_recebimento, 
+co.status AS status, IIf(r.status='Recebido','paid','Aberto') AS st_recebimento
 FROM (clientes AS c LEFT JOIN contratos AS co ON c.idpessoa = co.idpessoa) LEFT JOIN receber AS r ON r.idpessoa = c.idpessoa
 WHERE co.datainicio = (SELECT MAX(datainicio) FROM contratos WHERE idpessoa = c.idpessoa);
