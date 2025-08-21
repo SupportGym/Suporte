@@ -1,3 +1,19 @@
+--+ [ EVO template ]
+
+-- Carregar as seguintes tabelas para o ACCESS
+	- CLIENTE
+	- CONTRATO
+	- CLIENTES_CONTRATOS (talvez versões antigas da Evo não tenha essa tabela)
+	- TELEFONE
+	- RECEBIMENTOS
+	- ESTADO
+	
+	Sem chave primária
+	A primeira linha contém títulos de coluna
+	
+	Obs: Esse script já está configurado para a migração dos tokens de cartão. Apenas copie e cole ele no Design de Consulta
+-- 1) member_migration
+
 SELECT DISTINCT c.id_cliente AS id_aluno, ucase(c.endereco) & ' ' & c.numero & ' - ' & c.complemento AS descr_endereco, format(c.dt_nascimento, "yyyy-mm-dd") AS dt_nasc, "'+55" + replace(replace(replace(nz(cel.fone,0),'(',''),')',''),'-','') AS num_celular, "'+55" + replace(replace(replace(nz(tel.fone,0),'(',''),')',''),'-','') AS num_telefone, ucase(c.cidade) AS descr_cidade, c.cpf AS num_cpf, lcase(e.email) AS descr_email, c.sexo AS tipo_genero, ucase(c.nome & ' ' & c.snome) AS descr_nome, ucase(c.bairro) AS descr_bairro, ucase(c.rg) AS num_rg, u.sigla AS sigla_uf, c.cep AS num_cep, format(iif(isnull(c.dt_cadastro), date(), c.dt_cadastro), "yyyy-mm-dd") AS dt_cadastro, null AS descr_annotation, iif(isnull(c.lat), 0, c.lat) AS num_latitude, iif(isnull(c.lon), 0, c.lon) AS num_longitude, ct.id_cliente_contrato AS id_contrato, format(iif(isnull(ct.inicio), date(), ct.inicio), "yyyy-mm-dd") AS dt_contrato_ini, format(iif(isnull(ct.fim), date(), ct.fim), "yyyy-mm-dd") AS dt_contrato_fim, ucase(ct.ds_contrato) AS descr_plano, p.valor AS vlr_recebido, Switch( 
     r.id_tipo_recebimento in (1,6,7) ,"DN",
 					r.id_tipo_recebimento = 2, "ECC",
