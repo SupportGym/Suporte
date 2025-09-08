@@ -7,7 +7,9 @@
 	- TELEFONE
 	- RECEBIMENTOS
 	- ESTADO
-	
+	- RECEBIMENTO_TIPO
+	- VENDA
+	- VENDA_ITEM
 	Sem chave primária
 	A primeira linha contém títulos de coluna
 	
