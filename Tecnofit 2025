@@ -1,1 +1,31 @@
+As planilhas que serão necessário extrair do arquivo bruto são
 
+1. ClienteContrato
+2. Contato
+3. Contrato
+4. Endereco
+5. Pessoa
+6. Recibo
+
+Elas viram em CSV, e cabe a conversão para XLS(Planilha do Microsoft Excel).
+Algumas planilhas podem ter erro ao abrir, isso pois na primeira coluna elas vem com o nome ID. Você precisa clicar com o botão direito e editar. Irá abrir o bloco de notas, troque ID
+por qualquer outro nome e salve. Depois que a planilha abrir, volte novamente o nome para ID.
+
+Abaixo a QUERY sem pagamentos do Tecnofit.
+
+SELECT p.id AS id_aluno, ucase(e.logradouro) & " " &
+      ucase(e.numero) &  " " &
+      ucase(e.complemento) AS descr_endereco, format (p.datanascimento, "yyyy-mm-dd") AS dt_nasc, "'+55" + tc.tel_cel AS num_celular, ucase(e.cidade) AS descr_cidade, p.cpf AS num_cpf, p.email AS descr_email, p.sexo AS tipo_genero, ucase(p.nome) AS descr_nome, ucase(e.bairro) AS descr_bairro, "'+55" + tr.tel_res AS num_telefone, ucase(p.rg) AS num_rg, e.uf AS sigla_uf, e.cep AS num_cep, format (iif(isnull(P.datacriacao),date(), P.datacriacao), "yyyy-mm-dd") AS dt_cadastro, null AS descr_annotation, 0 AS num_latitude, 0 AS num_longitude, c.id AS id_contrato, format (iif(isnull(c.datainicio),date(), c.datainicio), "yyyy-mm-dd") AS dt_contrato_ini, format (iif(isnull(c.datavencimento),date(), c.datavencimento), "yyyy-mm-dd") AS dt_contrato_fim, ucase(c.nome) AS descr_plano
+FROM (((pessoa AS p LEFT JOIN (select idcliente, contato as tel_cel
+                from contato
+                where tipoenderecocontatoid = 1
+            )  AS tc ON tc.idcliente = p.id) LEFT JOIN (select idcliente, logradouro, numero, complemento, bairro, uf, cep, cidade
+            from endereco
+        )  AS e ON e.idcliente = p.id) LEFT JOIN (select idcliente, contato as tel_res
+        from contato
+        where tipoenderecocontatoid = 2
+    )  AS tr ON tr.idcliente = p.id) LEFT JOIN (select cc.pessoaid, cc.id, cc.datainicio, cc.datavencimento, c.nome
+    from clientecontrato cc left join contrato c on (c.id = cc.contratoid)
+)  AS c ON c.pessoaid = p.id
+WHERE c.id is not null
+ORDER BY p.id;
