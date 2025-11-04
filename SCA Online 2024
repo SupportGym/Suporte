@@ -14,7 +14,7 @@ SELECT
   , a.Email                   																	as  descr_email        
   , "'+55" + replace(replace(replace(replace(nz(a.Telefone1,0),'(',''),')',''),'-',''),' ','')  as  num_telefone       
   , a.Endereco & " N° " & a.numero & " Complemento " & a.complemento 							as  descr_endereco
-  , format(m.Nascimento,"yyyy-mm-dd")		                                                    as dt_nasc
+  , format(a.Nascimento,"yyyy-mm-dd")		                                                    as dt_nasc
   , "'+55" + replace(replace(replace(replace(nz(a.Celular,0),'(',''),')',''),'-',''),' ','')    as  num_celular        
   , a.CPF                       																as  num_cpf            
   , replace(replace(a.Sexo,"Masculino","M"),"Feminino","F") 									as 	tipo_genero    
