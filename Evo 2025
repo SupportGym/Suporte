@@ -35,7 +35,7 @@ FROM (((((cliente AS c LEFT JOIN (SELECT t0.id_cliente, t0.descricao as fone
             GROUP BY id_cliente
         ) t1 ON (t1.id_cliente = t0.id_cliente AND t1.id_telefone0 = t0.id_telefone)
         WHERE tipo_contato = 1
-    )  AS tel ON tel.id_cliente = c.id_cliente and c.FL_DADOS_PESSOAIS_EXCLUIDOS <> "True" and FL_EXCLUIDO <> "True") LEFT JOIN (SELECT t0.id_cliente, t0.descricao as fone
+    )  AS tel ON tel.id_cliente = c.id_cliente) LEFT JOIN (SELECT t0.id_cliente, t0.descricao as fone
         FROM telefone t0
         INNER JOIN (
             SELECT id_cliente, max(id_telefone) as id_telefone0
