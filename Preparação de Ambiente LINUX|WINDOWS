@@ -15,5 +15,11 @@ reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUn
 
 6. Criar uma pasta no disco C com o nome "migracao" e colar a chave que for enviada via e-mail
 
-7. No Ubuntu coloque os seguintes comandos: mkdir e após ls -l
+7. No Ubuntu coloque os seguintes comandos para criar a pasta migracao: mkdir e após ls -l
+
+8. Uma vez a pasta criada, vamos transferir a chave do Disco C: para o Ubuntu
+Usaremos a seguinte linha cp /mnt/c/migracao/1219_1455_atlantica.sql /home/alan/migracao/
+Varia de acordo com o contexto e nome dos arquivos
+
+9. 
 
