@@ -4,7 +4,16 @@ Para o Windows 11
 1. Ativar o modo de desenvolvedor no WIndows, use o CMD e cole o seguinte código:
 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /f /v "AllowDevelopmentWithoutDevLicense" /d "1"
 
-2. Em seguida, baixe o UBUNTU de sua preferencia, aconselhamos o UBUNTU.20.04
+2. acesse ativar ou desativar recursos do Windows > ativar a opção subsistemas do Windows para Linux
 
-3. acesse ativar ou desativar recursos do Windows > ativar a opção subsistemas do Windows para Linux
+
+3. Em seguida, baixe o UBUNTU de sua preferencia, aconselhamos o UBUNTU.20.04
+
+4. criar usuário e senha para o Ubuntu
+
+5. Instalar POSTGRES no local: sudo apt-get update e sudo apt install postgresql
+
+6. Criar uma pasta no disco C com o nome "migracao" e colar a chave que for enviada via e-mail
+
+7. No Ubuntu coloque os seguintes comandos: mkdir e após ls -l
 
