@@ -1,4 +1,10 @@
-1. Ativar o modo de desenvolvedor no WIndows, use o caminho Configurações > Sistema > Para desenvolvedores
+Para o Windows 11
+
+
+1. Ativar o modo de desenvolvedor no WIndows, use o CMD e cole o seguinte código:
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" /t REG_DWORD /f /v "AllowDevelopmentWithoutDevLicense" /d "1"
 
 2. Em seguida, baixe o UBUNTU de sua preferencia, aconselhamos o UBUNTU.20.04
+
+3. acesse ativar ou desativar recursos do Windows > ativar a opção subsistemas do Windows para Linux
 
