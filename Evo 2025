@@ -10,6 +10,8 @@
 	- RECEBIMENTO_TIPO
 	- VENDA
 	- VENDA_ITEM
+	- CLIENTES_CARTOES
+(mesmo que não suba cartões, usar essa planilha)
 	Sem chave primária
 	A primeira linha contém títulos de coluna
 	
