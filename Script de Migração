@@ -12,38 +12,47 @@ cp /mnt/c/migracao/0123_0123_Alunos_Exemplo_Academia.xlsx /home/(seu diretótio)
 
 
 3- Após copiar para o ambiente linux, encaminhe sua planilha para o servidor: 
-scp -i devaws.pem 0123_0123_Alunos_Exemplo_Academia.xlsx ec2-user@devapp.cloudgym.com:/opt/infra-scripts/migration/pending
+scp -i support-macdev.pem 3539_4433_ALUNOS_20260825_AQUA_FIT_MATINHOS_1.xlsx support@devapp.cloudgym.com:./migration-data/pending
 
 
 4- Acesse o servidor: 
-ssh -i devaws.pem ec2-user@devapp.cloudgym.com;
+ssh -i support-macdev.pem support@devapp.cloudgym.com
 
 
 5- Acesse apenas o local de migrações do servidor: 
-cd /opt/infra-scripts/migration/
+cd migration-app/
 
 
-6- Digite "ls -l" para se certificar de que está do diretório correto: 
+6- Digite "ls -rtl" para se certificar de que está do diretório correto: 
 (Segue abaixo um exemplo do que deve aparecer)
 
-drwxrwxr-x 2 ec2-user ec2-user   109 Jan 11  2023 bin
-drwxrwxr-x 2 ec2-user ec2-user 20480 Oct  4 22:00 bkp
--rwxrw-r-- 1 ec2-user ec2-user  2736 Sep 25 17:10 build_alunos_mig_card.sh
-drwxrwxr-x 2 ec2-user ec2-user   134 Sep 25 17:10 carddata
-drwxrwxr-x 2 ec2-user ec2-user     6 Oct  4 15:34 error
--rwxrw-r-- 1 ec2-user ec2-user  2186 Sep 25 14:44 load_chd-db.sh
--rwxrwxr-x 1 ec2-user ec2-user  5892 Sep 25 16:40 load_migration-db.sh
-drwxrwxr-x 2 ec2-user ec2-user     6 Oct  4 15:35 pending
--rw-rw-r-- 1 ec2-user ec2-user  1915 Sep 28  2023 pom.xml
-drwxrwxr-x 2 ec2-user ec2-user     6 Oct  4 22:00 processed
-drwxr-xr-x 3 ec2-user ec2-user    18 Sep  1  2022 src
-drwxrwxr-x 7 ec2-user ec2-user   147 Sep  2  2022 target
-drwxrwxr-x 2 ec2-user ec2-user     6 Sep  2  2022 tmp
-[ec2-user@dev migration]$
+-rw-r--r--  1 support  staff    49 Sep  4 16:17 README.md
+-rwxr-xr-x  1 support  staff  9453 Sep  4 16:17 build-and-run.sh
+drwxr-xr-x  5 support  staff   160 Sep  4 16:17 card-migration
+drwxr-xr-x  3 support  staff    96 Sep  4 16:17 config
+-rwxr-xr-x  1 support  staff   424 Sep  4 16:17 debug-password.sh
+-rwxr-xr-x  1 support  staff   793 Sep  4 16:17 debug-process.sh
+-rw-r--r--  1 support  staff  1241 Sep  4 16:17 docker-compose.yml
+-rwxr-xr-x  1 support  staff  2196 Sep  4 16:17 local-test.sh
+-rwxr-xr-x  1 support  staff   324 Sep  4 16:17 network-config.sh
+-rw-r--r--  1 support  staff  2233 Sep  4 16:17 pom.xml
+-rwxr-xr-x  1 support  staff   603 Sep  4 16:17 quick-run.sh
+-rwxr-xr-x  1 support  staff  2117 Sep  4 16:17 quick-start.sh
+-rwxr-xr-x  1 support  staff  7008 Sep  4 16:17 run-migration.sh
+-rwxr-xr-x  1 support  staff   643 Sep  4 16:17 setup-ssh.sh
+drwxr-xr-x  3 support  staff    96 Sep  4 16:17 src
+-rwxr-xr-x  1 support  staff  1021 Sep  4 16:17 test-container.sh
+-rwxr-xr-x  1 support  staff   498 Sep  4 16:17 test-with-password.sh
+drwxr-xr-x  2 support  staff    64 Sep  4 16:19 ssh-keys
+-rwxr-xr-x  1 support  staff   574 Sep  4 16:26 test-db-connection.sh
+-rwxr-xr-x  1 support  staff   752 Sep  4 16:37 build.sh
+-rw-r--r--  1 support  staff  1805 Sep  4 16:38 Dockerfile
+drwxr-xr-x  3 support  staff    96 Sep  4 16:52 scripts
+drwxrwxr-x  7 support  staff   224 Sep  4 16:57 data
 
 
 7- Inicie o processo de migração: 
-./load_migration-db.sh
+./run-migration.sh
 
 * Existem dois comandos de Load, tenha certeza que utilizou esse. 
 
