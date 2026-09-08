@@ -68,7 +68,8 @@ nothing to move...
 
 
 8- Para confirmar se sua migração foi corretamente para o Dev, acesse o diretório de processamento: 
-cd processed/
+cd data/ 
+e logo após: cd processed/
 
 
 9- Caso dê algum erro, acesse o diretório de erros "cd error/", remova com o comando "rm", corrija e refaça o processo.
