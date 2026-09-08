@@ -12,7 +12,7 @@ cp /mnt/c/migracao/0123_0123_Alunos_Exemplo_Academia.xlsx /home/(seu diretótio)
 
 
 3- Após copiar para o ambiente linux, encaminhe sua planilha para o servidor: 
-scp -i support-macdev.pem 3539_4433_ALUNOS_20260825_AQUA_FIT_MATINHOS_1.xlsx support@devapp.cloudgym.com:./migration-data/pending
+ scp -i support-macdev.pem 3539_4433_ALUNOS_20260825_AQUA_FIT_MATINHOS_1.xlsx support@devapp.cloudgym.com:./migration-app/data/pending/
 
 
 4- Acesse o servidor: 
