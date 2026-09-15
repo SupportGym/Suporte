@@ -8,10 +8,8 @@ ssh -i support-macdev.pem support@devapp.cloudgym.com
 cd /Users/support/extract-db/
 ./extract-db-macos.sh (Unidade)
 
- 3° Acessar o link para baixar o arquivo e encaminhar ao cliente que cancelou:
-https://devapp.cloudgym.com/output/
 
-4° Saia do servidor com o comando "exit"
+3° Saia do servidor com o comando "exit"
 
 5° Acesse para baixar o arquivo da extração:
 scp -i support-macdev.pem support@devapp.cloudgym.com:./extract-db/output/<GID>_<UNIT>.zip .
