@@ -1,17 +1,26 @@
  Realizar a extração de cancelados
  
  1° Acessar o a base do Dev pelo terminal
-ssh -i devaws.pem ec2-user@devapp.cloudgym.com;
+ssh -i support-macdev.pem support@devapp.cloudgym.com
  
- 2° Remover os bancos extraídos anteriormente:
-cd /usr/share/nginx/html/output/
 
-3° Acessar o diretório de script para extraír:
-cd /opt/infra-scripts/db/
-./extract-db.sh (Unidade)
+2° Acessar o diretório de script para extraír:
+~ support$ cd /Users/support/extract-db/
+./extract-db-macos.sh (Unidade)
 
- 4° Acessar o link para baixar o arquivo e encaminhar ao cliente que cancelou:
+ 3° Acessar o link para baixar o arquivo e encaminhar ao cliente que cancelou:
 https://devapp.cloudgym.com/output/
 
-5° Os bancos de dados extraídos estão no link abaixo:
-https://devapp.cloudgym.com/output/
+4° Saia do servidor com o comando "exit"
+
+5° Acesse para baixar o arquivo da extração:
+scp -i support-macdev.pem support@devapp.cloudgym.com:./extract-db/output/<GID>_<UNIT>.zip .
+
+OBS. Dê um ls -rtl para verificar se o arquivo de fato foi para o seu diretório
+Caso não ache no diretório, dê um "pwd" para saber o caminho do arquivo
+
+6° A senha do arquivo será o grupo e a unidade, tudo junto sem espaço ou traços, apenas números.
+Exemplo: 32623991
+
+
+
