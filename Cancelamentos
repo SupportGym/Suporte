@@ -5,7 +5,7 @@ ssh -i support-macdev.pem support@devapp.cloudgym.com
  
 
 2° Acessar o diretório de script para extraír:
-~ support$ cd /Users/support/extract-db/
+cd /Users/support/extract-db/
 ./extract-db-macos.sh (Unidade)
 
  3° Acessar o link para baixar o arquivo e encaminhar ao cliente que cancelou:
